@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
 import 'package:collection/collection.dart';
 import 'pages/map.dart';
-import 'pages/home.dart';
+import 'pages/home/home.dart';
 import 'pages/message.dart';
 import 'pages/mine.dart';
 import 'pages/order.dart';

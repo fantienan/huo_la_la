@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_baidu_mapapi_base/flutter_baidu_mapapi_base.dart';
 import 'package:flutter_baidu_mapapi_map/flutter_baidu_mapapi_map.dart';
 import 'package:flutter_bmflocation/flutter_bmflocation.dart';
 import 'package:huo_la_la/utils/util.dart';
@@ -73,6 +74,23 @@ class _LocationState extends State<Location> {
 
     _suc = await _locationPlugin.prepareLoc(androidMap, iosMap);
     printDebug('设置定位参数：$iosMap');
+  }
+
+  ///定位完成添加mark
+  void locationFinish() {
+    /// 创建BMFMarker
+    BMFMarker marker = BMFMarker.icon(
+        position: BMFCoordinate(_locationResult.latitude ?? 0.0, _locationResult.longitude ?? 0.0),
+        title: 'flutterMaker',
+        identifier: 'flutter_marker',
+        icon: 'resoures/icon_mark.png');
+    printDebug(_locationResult.latitude.toString() + _locationResult.longitude.toString());
+
+    /// 添加Marker
+    _mapController.addMarker(marker);
+
+    ///设置中心点
+    _mapController.setCenterCoordinate(BMFCoordinate(_locationResult.latitude ?? 0.0, _locationResult.longitude ?? 0.0), false);
   }
 
   /// 设置地图参数
