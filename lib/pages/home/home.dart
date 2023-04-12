@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'cargo_address.dart';
+import 'cargo.dart';
 import 'package:huo_la_la/components/location/location.dart';
 import 'package:huo_la_la/utils/theme.dart';
 
@@ -11,7 +11,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  static const double _headerHeight = 142;
+  static const double _headerHeight = 132;
   static const double _bottomNavigationBarHeight = 58;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -32,7 +32,6 @@ class _HomePageState extends State<HomePage> {
 
   Widget _header() {
     return Container(
-      width: double.infinity,
       height: _headerHeight,
       color: HomePageTheme.headerBackgroundColor,
       child: Column(children: [
@@ -49,35 +48,38 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _createBody(BuildContext context) {
-    return Stack(children: [
-      Container(
-        height: 20,
-        color: HomePageTheme.headerBackgroundColor,
-      ),
+    return Column(children: [
       ConstrainedBox(
-          constraints: BoxConstraints(maxHeight: _getBodyMaxHeight(context)),
-          child: Scrollbar(
-            child: SingleChildScrollView(
-                child: Column(
+        constraints: BoxConstraints(maxHeight: _getBodyMaxHeight(context)),
+        child: Scrollbar(
+          child: SingleChildScrollView(
+            child: Column(
               children: [
-                Container(
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(topLeft: Radius.elliptical(16, 14), topRight: Radius.elliptical(16, 14)),
-                    color: HomePageTheme.bodyBackgroundColor,
-                  ),
-                  child: const Padding(padding: EdgeInsets.only(top: 10), child: Text('小面')),
+                Stack(
+                  children: [
+                    Container(height: 13, color: HomePageTheme.headerBackgroundColor),
+                    Container(
+                      height: 14,
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.only(topLeft: Radius.elliptical(16, 14), topRight: Radius.elliptical(16, 14)),
+                        color: HomePageTheme.bodyBackgroundColor,
+                      ),
+                    ),
+                  ],
                 ),
+                const SizedBox(width: double.infinity, child: Text('小面')),
                 Padding(
                   padding: const EdgeInsets.only(top: 10),
                   child: Row(
                     children: List.generate(5, (index) => const Text('7米6')),
                   ),
                 ),
-                const CargoAddress(),
+                const Cargo(),
               ],
-            )),
-          ))
+            ),
+          ),
+        ),
+      ),
     ]);
   }
 
