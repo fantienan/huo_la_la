@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_baidu_mapapi_base/flutter_baidu_mapapi_base.dart';
 import 'package:flutter_baidu_mapapi_map/flutter_baidu_mapapi_map.dart';
+import '../../utils/util.dart';
 
 class BMFBaseMapState<T extends StatefulWidget> extends State<T> {
   late BMFMapController mapController;
@@ -28,7 +29,7 @@ class BMFBaseMapState<T extends StatefulWidget> extends State<T> {
 
     /// 地图加载回调
     mapController.setMapDidLoadCallback(callback: () {
-      print('mapDidLoad-地图加载完成');
+      printDebug('mapDidLoad-地图加载完成');
     });
   }
 

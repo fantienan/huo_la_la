@@ -18,6 +18,7 @@ class Fiche extends StatelessWidget {
     return Container(
       margin: margin,
       padding: padding,
+      width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: borderRadius,

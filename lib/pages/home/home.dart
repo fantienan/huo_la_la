@@ -24,9 +24,7 @@ class _HomePageState extends State<HomePage> {
         width: double.infinity,
         child: IconButton(icon: const Icon(Icons.close), onPressed: _closeDrawer),
       ),
-      body: Column(
-        children: [_header(), _createBody(context)],
-      ),
+      body: Column(children: [_header(), _createBody(context)]),
     );
   }
 
@@ -48,39 +46,40 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _createBody(BuildContext context) {
-    return Column(children: [
-      ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: _getBodyMaxHeight(context)),
-        child: Scrollbar(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Stack(
-                  children: [
-                    Container(height: 13, color: HomePageTheme.headerBackgroundColor),
-                    Container(
-                      height: 14,
-                      decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.only(topLeft: Radius.elliptical(16, 14), topRight: Radius.elliptical(16, 14)),
-                        color: HomePageTheme.bodyBackgroundColor,
-                      ),
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: _getBodyMaxHeight(context)),
+      child: Scrollbar(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Stack(
+                children: [
+                  Container(height: 13, color: HomePageTheme.headerBackgroundColor),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.only(top: 12),
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.only(topLeft: Radius.elliptical(16, 14), topRight: Radius.elliptical(16, 14)),
+                      color: HomePageTheme.bodyBackgroundColor,
                     ),
-                  ],
-                ),
-                const SizedBox(width: double.infinity, child: Text('小面')),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: Row(
-                    children: List.generate(5, (index) => const Text('7米6')),
+                    child: const Text('小面'),
                   ),
-                ),
-                const Cargo(),
-              ],
-            ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: List.generate(5, (index) => Text('7米$index'))),
+              const Cargo(),
+            ],
           ),
         ),
       ),
-    ]);
+    );
+    // return Column(children: [
+    //   ConstrainedBox(
+    //     constraints: BoxConstraints(maxHeight: _getBodyMaxHeight(context)),
+    //     child: ,
+    //   ),
+    // ]);
   }
 
   Size _getScreenSize(BuildContext context) => MediaQuery.of(context).size;
