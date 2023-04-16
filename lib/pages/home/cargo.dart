@@ -38,6 +38,8 @@ class _CargoState extends State<Cargo> {
 
   int get cargoLength => cargoAddressSettings.length;
 
+  static final List<List<double>> a = [];
+
   @override
   void initState() {
     super.initState();
@@ -62,18 +64,30 @@ class _CargoState extends State<Cargo> {
     final List<Widget> titleWidgets = [];
     final List<Widget> addressWidgets = [];
     final List<Widget> btnWidgets = [];
-    final isAddHandle = cargoAddressSettings.last.status == CargoAddressStatus.theNew;
-    final isRemoveHandle = cargoAddressSettings.last.status == CargoAddressStatus.removed;
+    final isAddHandle = cargoAddressSettings.last.status == CargoItemStatus.theNew;
+    var prevItemIsRemoved = false;
+    a.add([]);
     for (var index = 0; index < cargoTitleSettings.length; index += 1) {
-      double top = index * height;
       final cargoAddressSetting = cargoAddressSettings[index];
       final cargoTitleSetting = cargoTitleSettings[index];
       final isLast = index == cargoLength - 1;
       final flag = cargoLength > 2 && isLast && !isAddHandle;
-      Duration duration = isAddHandle && isLast ? cargoItemAnimationDuration : Duration.zero;
-      if (flag) {
-        top = (index - 1) * height;
+      final isRemovedItem = cargoAddressSetting.status == CargoItemStatus.removed;
+      Duration duration = isAddHandle && isLast || prevItemIsRemoved ? cargoItemAnimationDuration : Duration.zero;
+      double top = flag ? (index - 1) * height : index * height;
+      double opacity = 1;
+      if (isRemovedItem || (index == cargoLength - 2 && !isAddHandle)) {
+        opacity = 0;
       }
+      if (prevItemIsRemoved) {
+        top -= height;
+      }
+
+      if (isRemovedItem) {
+        prevItemIsRemoved = true;
+      }
+      print('a.a.a.a---$index---$duration');
+      a.last.add(top);
       final cargoTitle = CargoTitle(
         cargoTitleSetting.text,
         index: index,
@@ -92,47 +106,48 @@ class _CargoState extends State<Cargo> {
         AnimatedPositioned(
           duration: duration,
           top: top,
-          child: cargoTitle,
-          onEnd: () {
-            onAnimatedEnd(CargoItemTypes.title, index, cargoTitleSetting, cargoAddressSetting);
-          },
+          child: AnimatedOpacity(opacity: opacity, duration: cargoItemAnimationDuration, child: cargoTitle),
         ),
       );
       addressWidgets.add(
         AnimatedPositionedDirectional(
-          duration: duration,
-          top: top,
-          end: cargoItemSpace,
-          start: CargoTitle.width,
-          child: cargoAddress,
-          onEnd: () {
-            onAnimatedEnd(CargoItemTypes.address, index, cargoTitleSetting, cargoAddressSetting);
-          },
+            duration: duration,
+            top: top,
+            end: cargoItemSpace,
+            start: CargoTitle.width,
+            child: AnimatedOpacity(
+              opacity: opacity,
+              duration: cargoItemAnimationDuration,
+              child: cargoAddress,
+              onEnd: () => onAnimatedOpacityEnd(index, cargoAddressSetting),
+            ),
+            onEnd: () => onAnimatedPositionedEnd(index, cargoAddressSetting)),
+      );
+      btnWidgets.add(
+        Positioned(
+          top: top - height / 2,
+          child: SizedBox(
+            width: CargoTitle.width,
+            height: cargoItemHeight,
+            child: Center(
+                child: Opacity(
+              opacity: opacity,
+              child: Container(
+                width: CargoTitle.textContaienrWidth + 2,
+                height: CargoTitle.textContaienrHeight + 2,
+                decoration: BoxDecoration(
+                  border: Border.all(width: onePx, color: CargoTheme.titleButtonBorderColor),
+                  borderRadius: const BorderRadius.all(Radius.circular(4)),
+                ),
+                child: const Icon(Icons.swap_vert, size: 16),
+              ),
+            )),
+          ),
         ),
       );
-      if (index != 0 && !flag) {
-        btnWidgets.add(
-          Positioned(
-            top: top - height / 2,
-            child: SizedBox(
-              width: CargoTitle.width,
-              height: cargoItemHeight,
-              child: Center(
-                child: Container(
-                  width: CargoTitle.textContaienrWidth + 2,
-                  height: CargoTitle.textContaienrHeight + 2,
-                  decoration: BoxDecoration(
-                    border: Border.all(width: onePx, color: CargoTheme.titleButtonBorderColor),
-                    borderRadius: const BorderRadius.all(Radius.circular(4)),
-                  ),
-                  child: const Icon(Icons.swap_vert, size: 16),
-                ),
-              ),
-            ),
-          ),
-        );
-      }
     }
+
+    print("a.a.a.a---$a,${cargoAddressSettings.length}");
     var h = cargoLength * height - cargoItemSpace;
     return AnimatedContainer(
       duration: cargoItemAnimationDuration,
@@ -166,12 +181,11 @@ class _CargoState extends State<Cargo> {
     try {
       setState(() {
         if (handleType == CargoAddressHandle.add) {
-          cargoAddressSettings[index].status = CargoAddressStatus.theNew;
+          cargoAddressSettings[index].status = CargoItemStatus.theNew;
+          cargoTitleSettings[index].status = CargoItemStatus.theNew;
         } else {
-          // cargoAddressSettings[index].status = CargoAddressStatus.removed;
-          // cargoTitleSettings[index].status = CargoTitleStatus.removed;
-          cargoAddressSettings.removeAt(index);
-          cargoTitleSettings.removeAt(index);
+          cargoAddressSettings[index].status = CargoItemStatus.removed;
+          cargoTitleSettings[index].status = CargoItemStatus.removed;
         }
       });
     } catch (e) {
@@ -180,16 +194,11 @@ class _CargoState extends State<Cargo> {
   }
 
   void onCargoTitleSwapTap(int index) {}
-  void onAnimatedEnd(
-    CargoItemTypes cargoItemType,
-    int index,
-    CargoTitleSettings cargoTitleSetting,
-    CargoAddressSettings cargoAddressSetting,
-  ) {
-    if (cargoItemType == CargoItemTypes.address) {
-      if (index == cargoLength - 1 && cargoAddressSetting.status == CargoAddressStatus.theNew) {
+  void onAnimatedPositionedEnd(int index, CargoAddressSettings cargoAddressSetting) {
+    if (cargoAddressSetting.status == CargoItemStatus.theNew) {
+      if (index == cargoLength - 1) {
         setState(() {
-          cargoAddressSettings[index].status = CargoAddressStatus.normal;
+          cargoAddressSettings[index].status = CargoItemStatus.normal;
           cargoAddressSettings.insert(
             index,
             CargoAddressSettings(placeholder: '输入途径点', handleType: CargoAddressHandle.minus),
@@ -197,6 +206,15 @@ class _CargoState extends State<Cargo> {
           cargoTitleSettings.insert(index, CargoTitleSettings('经'));
         });
       }
+    }
+  }
+
+  void onAnimatedOpacityEnd(int index, CargoAddressSettings cargoAddressSetting) {
+    if (cargoAddressSetting.status == CargoItemStatus.removed) {
+      setState(() {
+        cargoTitleSettings.removeAt(index);
+        cargoAddressSettings.removeAt(index);
+      });
     }
   }
 }

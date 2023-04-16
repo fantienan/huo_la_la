@@ -8,13 +8,13 @@ const double _defaultTextContainerHeight = 18;
 const double _defaultTextContainerWidth = 18;
 
 class CargoTitle extends StatelessWidget {
-  CargoTitle(
+  const CargoTitle(
     this.text, {
     super.key,
     this.backgroundColor = CargoTheme.defaultTitleBackgroundColor,
     this.onSwapTap,
     this.index = 0,
-    this.status = CargoTitleStatus.normal,
+    this.status = CargoItemStatus.normal,
   });
 
   static const double fontSize = _fontSize;
@@ -26,7 +26,7 @@ class CargoTitle extends StatelessWidget {
   final String text;
   final CargoTitleSwapCallback? onSwapTap;
   final int index;
-  CargoTitleStatus status;
+  final CargoItemStatus status;
 
   @override
   Widget build(BuildContext context) {
@@ -53,18 +53,17 @@ class CargoTitle extends StatelessWidget {
   }
 }
 
-enum CargoTitleStatus { normal, theNew, removed }
-
 class CargoTitleSettings {
   CargoTitleSettings(
     this.text, {
-    this.backgroundColor = CargoTheme.defaultTitleBackgroundColor,
-    this.status = CargoTitleStatus.normal,
+    this.backgroundColor = Colors.red,
+    // this.backgroundColor = CargoTheme.defaultTitleBackgroundColor,
+    this.status = CargoItemStatus.normal,
   });
 
   final Color? backgroundColor;
   final String text;
-  CargoTitleStatus status;
+  CargoItemStatus status;
 }
 
 typedef CargoTitleSwapCallback = void Function(int index);

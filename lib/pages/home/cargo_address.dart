@@ -9,7 +9,7 @@ const double _buttonIconSize = 16;
 const double _defaultWidth = 100;
 
 class CargoAddress extends StatelessWidget {
-  CargoAddress({
+  const CargoAddress({
     super.key,
     this.placeholder = '输入卸货地',
     this.placeholderColor = CargoTheme.defaultPlaceholderColor,
@@ -18,7 +18,7 @@ class CargoAddress extends StatelessWidget {
     this.width = defaultWidth,
     this.onHandleTap,
     this.index = 0,
-    this.status = CargoAddressStatus.normal,
+    this.status = CargoItemStatus.normal,
   });
 
   static const double borderRadius = _borderRadius;
@@ -34,7 +34,7 @@ class CargoAddress extends StatelessWidget {
   final CargoAddressHandle? handleType;
   final CargoAddressHandleCallback? onHandleTap;
   final int index;
-  CargoAddressStatus status;
+  final CargoItemStatus status;
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +58,7 @@ class CargoAddress extends StatelessWidget {
         if (handleType != null)
           SizedBox(
             width: 60,
+            height: height,
             child: GestureDetector(
               onTap: () => onHandleTap is Function ? onHandleTap!(handleType!, index) : null,
               // onTap: f,
@@ -66,7 +67,10 @@ class CargoAddress extends StatelessWidget {
                       Icon(Icons.add_circle, size: buttonIconSize, color: CargoTheme.buttonBackgroundColor),
                       Text("加途径点", style: TextStyle(color: CargoTheme.buttonTextColor, fontSize: 10))
                     ])
-                  : const Icon(Icons.do_not_disturb_on, size: buttonIconSize, color: CargoTheme.buttonBackgroundColor),
+                  : Column(mainAxisAlignment: MainAxisAlignment.center, children: const [
+                      Icon(Icons.do_not_disturb_on, size: buttonIconSize, color: CargoTheme.buttonBackgroundColor),
+                      Text("减途径点", style: TextStyle(color: CargoTheme.buttonTextColor, fontSize: 10))
+                    ]),
             ),
           )
       ]),
@@ -81,7 +85,7 @@ class CargoAddressSettings {
     this.handleType,
     this.height = cargoItemHeight,
     this.width = _defaultWidth,
-    this.status = CargoAddressStatus.normal,
+    this.status = CargoItemStatus.normal,
   });
 
   final double height;
@@ -89,11 +93,9 @@ class CargoAddressSettings {
   final String placeholder;
   final Color placeholderColor;
   final CargoAddressHandle? handleType;
-  CargoAddressStatus status;
+  CargoItemStatus status;
 }
 
 enum CargoAddressHandle { add, minus }
-
-enum CargoAddressStatus { normal, theNew, removed }
 
 typedef CargoAddressHandleCallback = void Function(CargoAddressHandle handleType, int index);
